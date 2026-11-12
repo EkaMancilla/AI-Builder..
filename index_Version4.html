@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eaf4ff">
+  <title>Maths Bloom 🌱</title>
+  <style>
+    :root {
+      --ink: #203450;
+      --muted: #64758c;
+      --blue: #477be8;
+      --blue-dark: #315fc2;
+      --sky: #e7f3ff;
+      --pink: #ffe8ef;
+      --yellow: #fff3cc;
+      --mint: #e4f8eb;
+      --purple: #f0eaff;
+      --white: #fff;
+      --line: #e2ebf5;
+      --shadow: 0 16px 40px rgba(56, 89, 139, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 5% 10%, #dff1ff 0, transparent 26rem),
+        radial-gradient(ellipse at 95% 25%, #ffebf0 0, transparent 23rem),
+        #f8fbff;
+      font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+    }
+
+    button, select { font: inherit; }
+    button { cursor: pointer; }
+    .wrap { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 0;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 1000; }
+    .brand-mark {
+      display: grid; place-items: center; width: 44px; height: 44px;
+      border-radius: 15px; background: var(--yellow); font-size: 1.5rem;
+      transform: rotate(-6deg);
+    }
+    .header-chip {
+      padding: 9px 14px; border-radius: 999px;
+      background: var(--mint); color: #26734f; font-size: .85rem; font-weight: 900;
+    }
+
+    main { padding: 10px 0 46px; }
+
+    .hero {
+      display: grid; grid-template-columns: 1.25fr .75fr;
+      gap: 18px; margin-bottom: 20px;
+    }
+
+    .welcome, .score-card, .panel {
+      border: 1px solid rgba(218,231,245,.9);
+      border-radius: 28px; background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow);
+    }
+
+    .welcome {
+      position: relative; overflow: hidden; min-height: 300px;
+      padding: clamp(24px, 5vw, 46px);
+      background: linear-gradient(130deg, #e5f3ff 0%, #f0edff 57%, #fff1e9 100%);
+    }
+
+    .welcome::after {
+      content: "✦"; position: absolute; right: 28px; top: 16px;
+      color: rgba(71,123,232,.23); font-size: 2rem;
+    }
+
+    .welcome::before {
+      content: ""; position: absolute; width: 220px; height: 220px;
+      border-radius: 50%; right: 32px; bottom: -130px;
+      background: rgba(255,255,255,.4);
+    }
+
+    .hello-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 13px; border-radius: 999px;
+      background: rgba(255,255,255,.85); color: var(--blue-dark);
+      font-size: .85rem; font-weight: 900;
+    }
+
+    h1 {
+      max-width: 520px; margin: 17px 0 10px;
+      font-size: clamp(2.4rem, 6vw, 4rem); line-height: .99;
+      letter-spacing: -.055em;
+    }
+    h1 span { color: var(--blue); }
+    .welcome p { max-width: 490px; margin: 0; color: var(--muted); line-height: 1.65; font-size: 1.03rem; }
+    .mascot {
+      position: absolute; right: 8%; bottom: 20px; z-index: 1;
+      display: grid; place-items: center; width: 112px; height: 112px;
+      border: 5px solid white; border-radius: 38px; background: #fff;
+      box-shadow: 0 12px 25px rgba(58,91,145,.15);
+      font-size: 4.2rem; transform: rotate(7deg);
+      animation: bob 3s ease-in-out infinite;
+    }
+    @keyframes bob { 0%,100% { transform: translateY(0) rotate(7deg); } 50% { transform: translateY(-9px) rotate(3deg); } }
+
+    .score-card {
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 25px; background: linear-gradient(155deg, #fff, #eff7ff);
+    }
+    .score-label { margin: 0; color: var(--muted); font-size: .87rem; font-weight: 900; letter-spacing: .04em; }
+    .score-number { margin: 8px 0 0; color: var(--blue-dark); font-size: clamp(3.2rem, 7vw, 5rem); font-weight: 1000; letter-spacing: -.07em; line-height: 1; }
+    .score-caption { margin-top: 5px; color: var(--muted); font-size: .9rem; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+    .stat { padding: 13px; border: 1px solid var(--line); border-radius: 17px; background: #fff; }
+    .stat strong { display: block; font-size: 1.25rem; }
+    .stat span { color: var(--muted); font-size: .78rem; }
+
+    .panel { padding: clamp(20px, 4vw, 32px); }
+    .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    .panel-heading h2 { margin: 0 0 6px; font-size: 1.5rem; letter-spacing: -.03em; }
+    .panel-heading p { margin: 0; color: var(--muted); font-size: .94rem; line-height: 1.5; }
+
+    .topic-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 18px; }
+    .topic-button {
+      min-height: 82px; padding: 12px 8px; border: 2px solid transparent;
+      border-radius: 18px; color: var(--ink); font-weight: 900;
+      background: var(--sky); transition: transform .16s, box-shadow .16s, border-color .16s;
+    }
+    .topic-button:nth-child(6n+2) { background: var(--pink); }
+    .topic-button:nth-child(6n+3) { background: var(--yellow); }
+    .topic-button:nth-child(6n+4) { background: var(--mint); }
+    .topic-button:nth-child(6n+5) { background: var(--purple); }
+    .topic-button:nth-child(6n+6) { background: #ffeedf; }
+    .topic-button:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 0 8px 16px rgba(56,89,139,.12); }
+    .topic-button.selected { border-color: var(--blue); box-shadow: 0 5px 15px rgba(71,123,232,.17); }
+    .topic-emoji { display: block; margin-bottom: 5px; font-size: 1.45rem; }
+    .topic-name { font-size: .8rem; }
+
+    .start-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .start-hint { color: var(--muted); font-size: .88rem; }
+    .primary, .secondary {
+      min-height: 48px; padding: 0 20px; border: 0; border-radius: 15px;
+      font-weight: 1000; transition: transform .15s, box-shadow .15s, background .15s;
+    }
+    .primary {
+      background: var(--blue); color: #fff;
+      box-shadow: 0 7px 0 #315fc2, 0 10px 18px rgba(71,123,232,.2);
+    }
+    .primary:hover { background: #3e71db; transform: translateY(-2px); }
+    .primary:active { transform: translateY(3px); box-shadow: 0 3px 0 #315fc2; }
+    .secondary { background: #edf4ff; color: var(--blue-dark); }
+    .secondary:hover { background: #e0edff; }
+    button:focus-visible, select:focus-visible { outline: 3px solid #a9c8ff; outline-offset: 3px; }
+
+    .quiz-box {
+      display: none; margin-top: 20px; padding: clamp(18px, 4vw, 28px);
+      border: 1px solid var(--line); border-radius: 23px;
+      background: linear-gradient(145deg, #f7fbff, #fffafd);
+    }
+    .quiz-box.active { display: block; animation: pop .25s ease-out; }
+    @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.99); } to { opacity: 1; transform: none; } }
+
+    .quiz-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 13px; }
+    .topic-pill, .progress-label { padding: 8px 12px; border-radius: 999px; font-size: .82rem; font-weight: 1000; }
+    .topic-pill { background: var(--purple); color: #6449a3; }
+    .progress-label { background: white; color: var(--muted); }
+    .progress-track { height: 11px; overflow: hidden; margin-bottom: 22px; border-radius: 99px; background: #e6edf7; }
+    .progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #69b4ff, #8b72ee, #ff91ae); transition: width .3s ease; }
+    .question { margin: 0 0 18px; font-size: clamp(1.35rem, 3.5vw, 1.9rem); line-height: 1.3; }
+    .options { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .option {
+      min-height: 60px; padding: 13px 15px; border: 2px solid var(--line);
+      border-radius: 17px; background: #fff; color: var(--ink);
+      text-align: left; font-weight: 900; transition: .15s ease;
+    }
+    .option:hover:not(:disabled) { transform: translateY(-2px); border-color: #9abaff; box-shadow: 0 7px 14px rgba(56,89,139,.08); }
+    .option:disabled { cursor: default; opacity: 1; }
+    .option.correct { border-color: #59b888; background: #e7f8ef; color: #216d49; }
+    .option.wrong { border-color: #ed8a9d; background: #fff0f3; color: #9a3b50; }
+    .feedback { min-height: 28px; margin: 15px 0 0; color: var(--muted); font-weight: 800; line-height: 1.5; }
+    .feedback.good { color: #26734f; }
+    .feedback.kind { color: #a44a5c; }
+    .quiz-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+    .live-score { font-weight: 1000; color: var(--blue-dark); }
+
+    .certificate {
+      display: none; position: relative; overflow: hidden; margin-top: 20px;
+      padding: clamp(24px, 5vw, 42px); border: 3px dashed #9bbaf2;
+      border-radius: 25px; background: linear-gradient(135deg, #f1f8ff, #fff8e9, #f7f0ff); text-align: center;
+    }
+    .certificate.show { display: block; animation: pop .3s ease-out; }
+    .seal { font-size: 2.8rem; }
+    .certificate h2 { margin: 8px 0; font-size: clamp(1.6rem, 4vw, 2.3rem); }
+    .certificate .result { margin: 12px 0; color: var(--blue-dark); font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 1000; letter-spacing: -.05em; }
+    .certificate p { max-width: 570px; margin: 8px auto; color: var(--muted); line-height: 1.6; }
+    .congrats { color: #e26b59; font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 1000; }
+    .cert-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+    .history { margin-top: 20px; }
+    .history-list { display: grid; gap: 9px; margin-top: 14px; }
+    .history-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 13px 15px; border: 1px solid var(--line); border-radius: 15px;
+      background: #f8fbff; font-size: .9rem;
+    }
+    .history-item span { color: var(--muted); }
+    .history-empty { padding: 16px; border-radius: 15px; background: #f8fbff; color: var(--muted); line-height: 1.5; }
+    footer { padding: 20px 0 30px; text-align: center; color: var(--muted); font-size: .84rem; }
+    #confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
+
+    @media (max-width: 800px) {
+      .hero { grid-template-columns: 1fr; }
+      .welcome { min-height: 280px; }
+      .score-card { min-height: 210px; }
+      .topic-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .wrap { width: min(100% - 22px, 1120px); }
+      header { padding: 13px 0; }
+      .header-chip { font-size: .72rem; }
+      .mascot { width: 78px; height: 78px; right: 18px; bottom: 16px; border-radius: 27px; font-size: 3rem; }
+      .welcome { min-height: 290px; }
+      .welcome p { max-width: 75%; }
+      .topic-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .topic-button { min-height: 76px; }
+      .topic-name { font-size: .72rem; }
+      .start-row, .panel-heading { align-items: stretch; flex-direction: column; }
+      .start-row .primary { width: 100%; }
+      .options { grid-template-columns: 1fr; }
+      .quiz-bottom { align-items: stretch; flex-direction: column; }
+      .quiz-bottom .primary { width: 100%; }
+    }
+    @media print {
+      body { background: white; }
+      header, .hero, #quizPanel > .panel-heading, .topic-grid, .start-row, .quiz-box, .history, footer, .cert-actions, #confetti { display: none !important; }
+      .certificate { display: block !important; border: 2px solid #9bbaf2; }
+      main { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <div class="wrap">
+    <header>
+      <div class="brand"><span class="brand-mark">🌱</span> Maths Bloom</div>
+      <div class="header-chip">🌈 Learn it. Try it. Bloom!</div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="welcome">
+          <div class="hello-chip">✨ Your maths adventure starts here</div>
+          <h1>Hey, math<br>explorer! <span>Let’s grow.</span></h1>
+          <p>Pick a topic, tackle 10 questions, and collect points. Getting one wrong is just your brain getting stronger! 💪</p>
+          <div class="mascot" aria-hidden="true">🦉</div>
+        </div>
+
+        <aside class="score-card" aria-label="Your scoreboard">
+          <div>
+            <p class="score-label">🏆 YOUR POINTS SO FAR</p>
+            <div class="score-number" id="totalPoints">0</div>
+            <div class="score-caption">points from correct answers</div>
+          </div>
+          <div class="stats">
+            <div class="stat"><strong id="quizCount">0</strong><span>quizzes played 🎮</span></div>
+            <div class="stat"><strong id="bestScore">—</strong><span>personal best 🌟</span></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="panel" id="quizPanel">
+        <div class="panel-heading">
+          <div>
+            <h2>Choose your next adventure! 🚀</h2>
+            <p>Tap a topic, then take on your 10-question challenge.</p>
+          </div>
+        </div>
+
+        <div class="topic-grid" id="topicGrid" aria-label="Choose a maths topic">
+          <button class="topic-button selected" data-topic="Mixed"><span class="topic-emoji">🌈</span><span class="topic-name">Mix it up</span></button>
+          <button class="topic-button" data-topic="Conversions"><span class="topic-emoji">📏</span><span class="topic-name">Conversions</span></button>
+          <button class="topic-button" data-topic="Addition"><span class="topic-emoji">➕</span><span class="topic-name">Addition</span></button>
+          <button class="topic-button" data-topic="Subtraction"><span class="topic-emoji">➖</span><span class="topic-name">Subtraction</span></button>
+          <button class="topic-button" data-topic="Multiplication"><span class="topic-emoji">✖️</span><span class="topic-name">Multiplication</span></button>
+          <button class="topic-button" data-topic="Division"><span class="topic-emoji">➗</span><span class="topic-name">Division</span></button>
+          <button class="topic-button" data-topic="Square roots"><span class="topic-emoji">√</span><span class="topic-name">Square roots</span></button>
+          <button class="topic-button" data-topic="Fractions"><span class="topic-emoji">🍰</span><span class="topic-name">Fractions</span></button>
+          <button class="topic-button" data-topic="Percentages"><span class="topic-emoji">💯</span><span class="topic-name">Percentages</span></button>
+          <button class="topic-button" data-topic="Ratio"><span class="topic-emoji">⚖️</span><span class="topic-name">Ratio</span></button>
+          <button class="topic-button" data-topic="Geometry"><span class="topic-emoji">📐</span><span class="topic-name">Geometry</span></button>
+        </div>
+
+        <div class="start-row">
+          <span class="start-hint">💡 No pressure—just practise and have fun!</span>
+          <button class="primary" id="startBtn">Let’s play! 🎉</button>
+        </div>
+
+        <div class="quiz-box" id="quizBox" aria-live="polite">
+          <div class="quiz-top">
+            <span class="topic-pill" id="currentTopic">🌈 Mix it up</span>
+            <span class="progress-label" id="questionCount">Question 1 of 10</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <h3 class="question" id="questionText"></h3>
+          <div class="options" id="options"></div>
+          <p class="feedback" id="feedback" role="status"></p>
+          <div class="quiz-bottom">
+            <span class="live-score" id="liveScore">⭐ 0 points</span>
+            <button class="primary" id="nextBtn" hidden>Next one! →</button>
+          </div>
+        </div>
+
+        <section class="certificate" id="certificate" aria-live="polite"></section>
+      </section>
+
+      <section class="panel history">
+        <div class="panel-heading">
+          <div>
+            <h2>Your victory shelf 🧸</h2>
+            <p>Look how far you’ve come! Recent quiz scores are saved on this device.</p>
+          </div>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </section>
+    </main>
+    <footer>Made for curious minds everywhere 💙</footer>
+  </div>
+
+  <script>
+    const bank = [
+      { topic: "Addition", q: "What is 348 + 276?", a: "624", options: ["614", "624", "634", "524"], explain: "348 + 276 = 624. Add the ones, tens, then hundreds." },
+      { topic: "Addition", q: "A shop has 125 oranges and gets 89 more. How many now?", a: "214", options: ["204", "214", "224", "240"], explain: "125 + 89 = 214 oranges altogether." },
+      { topic: "Addition", q: "What is 2,450 + 3,175?", a: "5,625", options: ["5,525", "5,625", "5,725", "4,625"], explain: "2,450 + 3,175 = 5,625." },
+      { topic: "Addition", q: "What is 67 + 58?", a: "125", options: ["115", "125", "135", "121"], explain: "67 + 58 = 125." },
+
+      { topic: "Subtraction", q: "What is 700 − 268?", a: "432", options: ["432", "442", "532", "422"], explain: "700 − 268 = 432. Regroup carefully across the zeros." },
+      { topic: "Subtraction", q: "A tank holds 950 litres. If 375 litres are used, how many remain?", a: "575 litres", options: ["575 litres", "585 litres", "675 litres", "525 litres"], explain: "950 − 375 = 575 litres remain." },
+      { topic: "Subtraction", q: "What is 1,000 − 647?", a: "353", options: ["363", "353", "453", "343"], explain: "1,000 − 647 = 353." },
+      { topic: "Subtraction", q: "What is 84 − 39?", a: "45", options: ["45", "55", "43", "44"], explain: "84 − 39 = 45." },
+
+      { topic: "Multiplication", q: "What is 24 × 6?", a: "144", options: ["124", "134", "144", "154"], explain: "24 × 6 = 144." },
+      { topic: "Multiplication", q: "A packet has 12 pencils. How many are in 8 packets?", a: "96", options: ["86", "96", "108", "92"], explain: "12 × 8 = 96 pencils." },
+      { topic: "Multiplication", q: "What is 15 × 15?", a: "225", options: ["215", "225", "235", "250"], explain: "15 × 15 = 225." },
+      { topic: "Multiplication", q: "What is 7 × 9?", a: "63", options: ["56", "63", "72", "69"], explain: "7 × 9 = 63." },
+
+      { topic: "Division", q: "What is 144 ÷ 12?", a: "12", options: ["10", "11", "12", "14"], explain: "144 ÷ 12 = 12 because 12 × 12 = 144." },
+      { topic: "Division", q: "Share 84 mangoes equally among 7 children. How many each?", a: "12 mangoes", options: ["11 mangoes", "12 mangoes", "13 mangoes", "14 mangoes"], explain: "84 ÷ 7 = 12 mangoes for each child." },
+      { topic: "Division", q: "What is 96 ÷ 8?", a: "12", options: ["10", "12", "14", "16"], explain: "96 ÷ 8 = 12." },
+      { topic: "Division", q: "What is 125 ÷ 5?", a: "25", options: ["20", "25", "30", "15"], explain: "125 ÷ 5 = 25." },
+
+      { topic: "Square roots", q: "What is √81?", a: "9", options: ["8", "9", "18", "81"], explain: "√81 = 9 because 9 × 9 = 81." },
+      { topic: "Square roots", q: "What is √144?", a: "12", options: ["11", "12", "14", "72"], explain: "√144 = 12 because 12 × 12 = 144." },
+      { topic: "Square roots", q: "What is √49?", a: "7", options: ["6", "7", "8", "14"], explain: "√49 = 7 because 7 × 7 = 49." },
+      { topic: "Square roots", q: "What is √100?", a: "10", options: ["5", "10", "20", "50"], explain: "√100 = 10 because 10 × 10 = 100." },
+
+      { topic: "Conversions", q: "How many centimetres are in 3 metres?", a: "300 cm", options: ["30 cm", "300 cm", "3,000 cm", "103 cm"], explain: "1 metre = 100 centimetres, so 3 m = 300 cm." },
+      { topic: "Conversions", q: "How many millilitres are in 2 litres?", a: "2,000 ml", options: ["200 ml", "2,000 ml", "20,000 ml", "1,200 ml"], explain: "1 litre = 1,000 ml, so 2 litres = 2,000 ml." },
+      { topic: "Conversions", q: "Convert 2.5 kilograms to grams.", a: "2,500 g", options: ["250 g", "2,500 g", "25,000 g", "2,050 g"], explain: "1 kg = 1,000 g, so 2.5 kg = 2,500 g." },
+      { topic: "Conversions", q: "How many minutes are in 2 hours?", a: "120 minutes", options: ["100 minutes", "120 minutes", "200 minutes", "60 minutes"], explain: "There are 60 minutes in an hour: 2 × 60 = 120." },
+
+      { topic: "Fractions", q: "What is 1/2 + 1/4?", a: "3/4", options: ["2/6", "3/4", "1/6", "2/4"], explain: "1/2 is 2/4, and 2/4 + 1/4 = 3/4." },
+      { topic: "Fractions", q: "What is 3/5 of 20?", a: "12", options: ["8", "10", "12", "15"], explain: "20 ÷ 5 = 4, then 4 × 3 = 12." },
+      { topic: "Fractions", q: "Which fraction is equal to 1/2?", a: "4/8", options: ["2/3", "3/8", "4/8", "5/8"], explain: "4/8 simplifies to 1/2 when the top and bottom are divided by 4." },
+      { topic: "Fractions", q: "What is 7/8 − 3/8?", a: "1/2", options: ["1/4", "1/2", "4/16", "3/8"], explain: "7/8 − 3/8 = 4/8, which simplifies to 1/2." },
+
+      { topic: "Percentages", q: "What is 10% of 500?", a: "50", options: ["5", "50", "100", "500"], explain: "10% means one tenth. 500 ÷ 10 = 50." },
+      { topic: "Percentages", q: "A class has 40 learners. 25% are absent. How many are absent?", a: "10", options: ["5", "8", "10", "25"], explain: "25% is one quarter, and 40 ÷ 4 = 10 learners." },
+      { topic: "Percentages", q: "What is 50% of 86?", a: "43", options: ["23", "40", "43", "46"], explain: "50% means half. Half of 86 is 43." },
+      { topic: "Percentages", q: "A book costs KSh 200. What is a 10% discount?", a: "KSh 20", options: ["KSh 10", "KSh 20", "KSh 40", "KSh 180"], explain: "10% of KSh 200 is KSh 20." },
+
+      { topic: "Ratio", q: "Red to blue beads are in a 2:3 ratio. If there are 10 red beads, how many blue?", a: "15", options: ["12", "13", "15", "20"], explain: "The ratio is multiplied by 5: 2 × 5 = 10, so 3 × 5 = 15 blue beads." },
+      { topic: "Ratio", q: "Simplify the ratio 12:8.", a: "3:2", options: ["2:3", "3:2", "6:4", "4:3"], explain: "Divide both parts by 4: 12:8 becomes 3:2." },
+      { topic: "Ratio", q: "Share 30 sweets in the ratio 2:3. How many are in the smaller share?", a: "12", options: ["10", "12", "15", "18"], explain: "There are 5 parts total. Each part is 30 ÷ 5 = 6, so the smaller share is 2 × 6 = 12." },
+      { topic: "Ratio", q: "A recipe uses 2 cups of flour for each 1 cup of sugar. How much flour for 3 cups of sugar?", a: "6 cups", options: ["3 cups", "5 cups", "6 cups", "8 cups"], explain: "The ratio is 2:1, so 3 cups of sugar need 2 × 3 = 6 cups of flour." },
+
+      { topic: "Geometry", q: "A rectangle is 8 cm long and 5 cm wide. What is its perimeter?", a: "26 cm", options: ["13 cm", "26 cm", "40 cm", "20 cm"], explain: "Perimeter = 2 × (length + width) = 2 × (8 + 5) = 26 cm." },
+      { topic: "Geometry", q: "What is the area of a rectangle 9 cm long and 4 cm wide?", a: "36 cm²", options: ["26 cm²", "36 cm²", "13 cm²", "72 cm²"], explain: "Area = length × width = 9 × 4 = 36 cm²." },
+      { topic: "Geometry", q: "How many degrees are in a right angle?", a: "90°", options: ["45°", "90°", "180°", "360°"], explain: "A right angle measures 90°." },
+      { topic: "Geometry", q: "A square has sides of 6 cm. What is its perimeter?", a: "24 cm", options: ["12 cm", "24 cm", "36 cm", "18 cm"], explain: "A square has 4 equal sides: 4 × 6 = 24 cm." }
+    ];
+
+    const STORE_KEY = "mathsBloomProgress_v1";
+    const $ = id => document.getElementById(id);
+    let progress = loadProgress();
+    let quiz = [];
+    let index = 0;
+    let score = 0;
+    let locked = false;
+    let selectedTopic = "Mixed";
+
+    function loadProgress() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORE_KEY));
+        return saved && Array.isArray(saved.history) ? saved : { totalPoints: 0, history: [] };
+      } catch {
+        return { totalPoints: 0, history: [] };
+      }
+    }
+
+    function saveProgress() {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(progress)); } catch {}
+      renderScoreboard();
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[char]));
+    }
+
+    function renderScoreboard() {
+      $("totalPoints").textContent = progress.totalPoints || 0;
+      $("quizCount").textContent = progress.history.length;
+      const best = progress.history.length ? Math.max(...progress.history.map(item => item.score)) : null;
+      $("bestScore").textContent = best === null ? "—" : `${best}/10`;
+
+      const list = $("historyList");
+      if (!progress.history.length) {
+        list.innerHTML = '<div class="history-empty">Your quiz wins will show up here. Go on—play your first round and start your victory shelf! 🌟</div>';
+        return;
+      }
+      list.innerHTML = progress.history.slice(0, 5).map(item =>
+        `<div class="history-item"><strong>${escapeHTML(item.topic)}</strong><span>${item.score}/10 · ${escapeHTML(item.date)}</span></div>`
+      ).join("");
+    }
+
+    function shuffle(items) {
+      const result = [...items];
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    document.querySelectorAll(".topic-button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".topic-button").forEach(item => item.classList.remove("selected"));
+        button.classList.add("selected");
+        selectedTopic = button.dataset.topic;
+      });
+    });
+
+    function startQuiz() {
+      const pool = selectedTopic === "Mixed" ? bank : bank.filter(item => item.topic === selectedTopic);
+      quiz = shuffle(pool).slice(0, 10);
+      while (quiz.length < 10) quiz.push(...shuffle(pool).slice(0, 10 - quiz.length));
+
+      index = 0;
+      score = 0;
+      locked = false;
+      $("certificate").classList.remove("show");
+      $("quizBox").classList.add("active");
+      $("currentTopic").textContent = selectedTopic === "Mixed" ? "🌈 Mix it up" : selectedTopic;
+      $("startBtn").textContent = "Restart round ↻";
+      renderQuestion();
+      $("quizBox").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function renderQuestion() {
+      locked = false;
+      const item = quiz[index];
+      $("questionCount").textContent = `Question ${index + 1} of 10`;
+      $("progressFill").style.width = `${index / 10 * 100}%`;
+      $("quizBox").querySelector('[role="progressbar"]').setAttribute("aria-valuenow", index);
+      $("questionText").textContent = item.q;
+      $("feedback").textContent = "";
+      $("feedback").className = "feedback";
+      $("liveScore").textContent = `⭐ ${score} ${score === 1 ? "point" : "points"}`;
+      $("nextBtn").hidden = true;
+      $("nextBtn").textContent = index === 9 ? "Get my certificate! 🎓" : "Next one! →";
+
+      $("options").innerHTML = "";
+      shuffle(item.options).forEach(choice => {
+        const button = document.createElement("button");
+        button.className = "option";
+        button.type = "button";
+        button.textContent = choice;
+        button.addEventListener("click", () => checkAnswer(button, choice, item));
+        $("options").appendChild(button);
+      });
+    }
+
+    function checkAnswer(button, choice, item) {
+      if (locked) return;
+      locked = true;
+      [...$("options").querySelectorAll(".option")].forEach(option => {
+        option.disabled = true;
+        if (option.textContent === item.a) option.classList.add("correct");
+      });
+
+      if (choice === item.a) {
+        score++;
+        progress.totalPoints = (progress.totalPoints || 0) + 1;
+        saveProgress();
+        $("feedback").textContent = `✨ Yes! You got it! ${item.explain}`;
+        $("feedback").classList.add("good");
+      } else {
+        button.classList.add("wrong");
+        $("feedback").textContent = `Nearly! Keep going—you’re learning. The answer is ${item.a}. ${item.explain}`;
+        $("feedback").classList.add("kind");
+      }
+
+      $("liveScore").textContent = `⭐ ${score} ${score === 1 ? "point" : "points"}`;
+      $("progressFill").style.width = `${(index + 1) / 10 * 100}%`;
+      $("quizBox").querySelector('[role="progressbar"]').setAttribute("aria-valuenow", index + 1);
+      $("nextBtn").hidden = false;
+    }
+
+    function finishQuiz() {
+      $("quizBox").classList.remove("active");
+      const percent = score * 10;
+      const celebration = score > 8;
+      const date = new Date().toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+
+      progress.history.unshift({
+        score,
+        topic: selectedTopic === "Mixed" ? "Mix it up 🌈" : selectedTopic,
+        date
+      });
+      progress.history = progress.history.slice(0, 20);
+      saveProgress();
+
+      $("certificate").innerHTML = `
+        <div class="seal">🎓🌟</div>
+        <div class="${celebration ? "congrats" : ""}">${celebration ? "YOU DID IT!" : "QUIZ COMPLETE!"}</div>
+        <h2>${celebration ? "Maths superstar!" : "Look at you go!"}</h2>
+        <p>This certificate celebrates your ${escapeHTML(selectedTopic === "Mixed" ? "Mix it up" : selectedTopic)} adventure.</p>
+        <div class="result">${score} / 10</div>
+        <p><strong>${percent}%</strong> of the available marks · ${date}</p>
+        <p>${celebration
+          ? "That’s over 80%—what brilliant work! Keep shining, superstar! 🎉"
+          : "Every try makes your brain stronger. Take a little break, then have another go—you can beat this score! 💪"}</p>
+        <div class="cert-actions">
+          <button class="primary" id="againBtn">Play again! 🎮</button>
+          <button class="secondary" id="printBtn">Print certificate 🖨️</button>
+        </div>`;
+      $("certificate").classList.add("show");
+      $("againBtn").addEventListener("click", startQuiz);
+      $("printBtn").addEventListener("click", () => window.print());
+      $("certificate").scrollIntoView({ behavior: "smooth", block: "center" });
+      if (celebration) launchConfetti();
+    }
+
+    $("startBtn").addEventListener("click", startQuiz);
+    $("nextBtn").addEventListener("click", () => {
+      if (index < 9) {
+        index++;
+        renderQuestion();
+      } else {
+        finishQuiz();
+      }
+    });
+
+    function launchConfetti() {
+      const canvas = $("confetti");
+      const ctx = canvas.getContext("2d");
+      const scale = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * scale;
+      canvas.height = window.innerHeight * scale;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.scale(scale, scale);
+
+      const colors = ["#477be8", "#ff8eaa", "#ffd166", "#70d6a5", "#a58bfa", "#ff9f68"];
+      const pieces = Array.from({ length: 140 }, () => ({
+        x: Math.random() * window.innerWidth,
+        y: -Math.random() * window.innerHeight,
+        size: 5 + Math.random() * 8,
+        speed: 2 + Math.random() * 4,
+        drift: (Math.random() - .5) * 2,
+        spin: Math.random() * 6,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      }));
+      let frames = 0;
+      function draw() {
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        pieces.forEach(piece => {
+          piece.y += piece.speed;
+          piece.x += piece.drift;
+          piece.spin += .08;
+          ctx.save();
+          ctx.translate(piece.x, piece.y);
+          ctx.rotate(piece.spin);
+          ctx.fillStyle = piece.color;
+          ctx.fillRect(-piece.size / 2, -piece.size / 2, piece.size, piece.size * .65);
+          ctx.restore();
+        });
+        if (++frames < 180) requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      }
+      draw();
+    }
+
+    renderScoreboard();
+  </script>
+</body>
+</html>

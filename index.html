@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#eaf4ff">
+  <meta name="description" content="Maths Bloom: free 10-question maths quizzes with instant feedback and a printable certificate.">
   <title>Maths Bloom 🌱</title>
   <style>
     :root {
@@ -338,57 +339,83 @@
   </div>
 
   <script>
-    const bank = [
-      { topic: "Addition", q: "What is 348 + 276?", a: "624", options: ["614", "624", "634", "524"], explain: "348 + 276 = 624. Add the ones, tens, then hundreds." },
-      { topic: "Addition", q: "A shop has 125 oranges and gets 89 more. How many now?", a: "214", options: ["204", "214", "224", "240"], explain: "125 + 89 = 214 oranges altogether." },
-      { topic: "Addition", q: "What is 2,450 + 3,175?", a: "5,625", options: ["5,525", "5,625", "5,725", "4,625"], explain: "2,450 + 3,175 = 5,625." },
-      { topic: "Addition", q: "What is 67 + 58?", a: "125", options: ["115", "125", "135", "121"], explain: "67 + 58 = 125." },
+    // Questions are generated fresh each round, so no two rounds are the same
+    const ri = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+    const fmt = n => n.toLocaleString("en-US");
 
-      { topic: "Subtraction", q: "What is 700 − 268?", a: "432", options: ["432", "442", "532", "422"], explain: "700 − 268 = 432. Regroup carefully across the zeros." },
-      { topic: "Subtraction", q: "A tank holds 950 litres. If 375 litres are used, how many remain?", a: "575 litres", options: ["575 litres", "585 litres", "675 litres", "525 litres"], explain: "950 − 375 = 575 litres remain." },
-      { topic: "Subtraction", q: "What is 1,000 − 647?", a: "353", options: ["363", "353", "453", "343"], explain: "1,000 − 647 = 353." },
-      { topic: "Subtraction", q: "What is 84 − 39?", a: "45", options: ["45", "55", "43", "44"], explain: "84 − 39 = 45." },
+    function numChoices(ans, unit = "") {
+      const set = new Set([ans]);
+      for (const s of shuffle([1, 2, 10, -1, -2, -10, 5, -5, Math.max(3, Math.round(ans * .1))])) {
+        if (set.size >= 4) break;
+        if (ans + s > 0) set.add(ans + s);
+      }
+      for (let k = 3; set.size < 4; k++) set.add(ans + k);
+      return [...set].map(n => fmt(n) + unit);
+    }
+    const make = (topic, q, ans, explain, unit = "") =>
+      ({ topic, q, a: fmt(ans) + unit, options: numChoices(ans, unit), explain });
 
-      { topic: "Multiplication", q: "What is 24 × 6?", a: "144", options: ["124", "134", "144", "154"], explain: "24 × 6 = 144." },
-      { topic: "Multiplication", q: "A packet has 12 pencils. How many are in 8 packets?", a: "96", options: ["86", "96", "108", "92"], explain: "12 × 8 = 96 pencils." },
-      { topic: "Multiplication", q: "What is 15 × 15?", a: "225", options: ["215", "225", "235", "250"], explain: "15 × 15 = 225." },
-      { topic: "Multiplication", q: "What is 7 × 9?", a: "63", options: ["56", "63", "72", "69"], explain: "7 × 9 = 63." },
+    const gens = {
+      Addition: [
+        () => { const a = ri(20, 999), b = ri(20, 999); return make("Addition", `What is ${fmt(a)} + ${fmt(b)}?`, a + b, `${fmt(a)} + ${fmt(b)} = ${fmt(a + b)}. Add the ones, then tens, then hundreds.`); },
+        () => { const a = ri(100, 900), b = ri(20, 150); return make("Addition", `A shop has ${a} oranges and gets ${b} more. How many now?`, a + b, `${a} + ${b} = ${a + b} oranges altogether.`); },
+        () => { const a = ri(1000, 6000), b = ri(1000, 4000); return make("Addition", `What is ${fmt(a)} + ${fmt(b)}?`, a + b, `${fmt(a)} + ${fmt(b)} = ${fmt(a + b)}.`); }
+      ],
+      Subtraction: [
+        () => { const a = ri(300, 999), b = ri(20, a - 50); return make("Subtraction", `What is ${a} − ${b}?`, a - b, `${a} − ${b} = ${a - b}. Regroup carefully when you need to.`); },
+        () => { const a = ri(500, 1000), b = ri(100, 450); return make("Subtraction", `A tank holds ${a} litres. If ${b} litres are used, how many remain?`, a - b, `${a} − ${b} = ${a - b} litres remain.`, " litres"); },
+        () => { const b = ri(100, 900); return make("Subtraction", `What is 1,000 − ${b}?`, 1000 - b, `1,000 − ${b} = ${fmt(1000 - b)}.`); }
+      ],
+      Multiplication: [
+        () => { const a = ri(3, 15), b = ri(3, 12); return make("Multiplication", `What is ${a} × ${b}?`, a * b, `${a} × ${b} = ${a * b}.`); },
+        () => { const a = ri(12, 48), b = ri(3, 9); return make("Multiplication", `What is ${a} × ${b}?`, a * b, `${a} × ${b} = ${a * b}.`); },
+        () => { const a = ri(6, 15), b = ri(4, 12); return make("Multiplication", `A packet has ${a} pencils. How many are in ${b} packets?`, a * b, `${a} × ${b} = ${a * b} pencils.`); }
+      ],
+      Division: [
+        () => { const b = ri(3, 12), c = ri(3, 15); return make("Division", `What is ${b * c} ÷ ${b}?`, c, `${b * c} ÷ ${b} = ${c} because ${b} × ${c} = ${b * c}.`); },
+        () => { const b = ri(3, 9), c = ri(4, 15); return make("Division", `Share ${b * c} mangoes equally among ${b} children. How many each?`, c, `${b * c} ÷ ${b} = ${c} mangoes each.`, " mangoes"); }
+      ],
+      "Square roots": [
+        () => { const r = ri(2, 15); return make("Square roots", `What is √${r * r}?`, r, `√${r * r} = ${r} because ${r} × ${r} = ${r * r}.`); }
+      ],
+      Conversions: [
+        () => { const m = ri(2, 9); return make("Conversions", `How many centimetres are in ${m} metres?`, m * 100, `1 metre = 100 cm, so ${m} m = ${m * 100} cm.`, " cm"); },
+        () => { const l = ri(2, 9); return make("Conversions", `How many millilitres are in ${l} litres?`, l * 1000, `1 litre = 1,000 ml, so ${l} litres = ${fmt(l * 1000)} ml.`, " ml"); },
+        () => { const k = ri(2, 9); return make("Conversions", `Convert ${k} kilograms to grams.`, k * 1000, `1 kg = 1,000 g, so ${k} kg = ${fmt(k * 1000)} g.`, " g"); },
+        () => { const h = ri(2, 6); return make("Conversions", `How many minutes are in ${h} hours?`, h * 60, `There are 60 minutes in an hour: ${h} × 60 = ${h * 60}.`, " minutes"); }
+      ],
+      Fractions: [
+        () => { const d = [2, 3, 4, 5, 8, 10][ri(0, 5)], n = ri(1, d - 1), x = d * ri(2, 12); return make("Fractions", `What is ${n}/${d} of ${x}?`, x / d * n, `${x} ÷ ${d} = ${x / d}, then ${x / d} × ${n} = ${x / d * n}.`); },
+        () => { const k = ri(2, 6), n = 4 * k; return make("Fractions", `What number replaces ? in 1/4 = ?/${n}`, k, `${n} ÷ 4 = ${k}, so 1/4 = ${k}/${n}.`); },
+        () => { const k = ri(2, 9), n = 2 * k; return make("Fractions", `What number replaces ? in 1/2 = ?/${n}`, k, `${n} ÷ 2 = ${k}, so 1/2 = ${k}/${n}.`); }
+      ],
+      Percentages: [
+        () => { const p = [10, 20, 25, 50][ri(0, 3)], b = 20 * ri(2, 25); return make("Percentages", `What is ${p}% of ${b}?`, b * p / 100, `${p}% of ${b} = ${b * p / 100}.`); },
+        () => { const b = 100 * ri(1, 9); return make("Percentages", `A book costs KSh ${b}. What is a 10% discount?`, b / 10, `10% of KSh ${b} is KSh ${b / 10}.`, ""); },
+        () => { const t = 4 * ri(5, 15); return make("Percentages", `A class has ${t} learners. 25% are absent. How many are absent?`, t / 4, `25% is one quarter, and ${t} ÷ 4 = ${t / 4} learners.`); }
+      ],
+      Ratio: [
+        () => { const a = ri(1, 4), b = a + ri(1, 3), k = ri(2, 8); return make("Ratio", `Red to blue beads are in a ${a}:${b} ratio. If there are ${a * k} red beads, how many blue?`, b * k, `The ratio is multiplied by ${k}: ${a} × ${k} = ${a * k}, so ${b} × ${k} = ${b * k} blue beads.`); },
+        () => { const a = ri(1, 4), b = a + ri(1, 3), k = ri(2, 8); return make("Ratio", `Share ${(a + b) * k} sweets in the ratio ${a}:${b}. How many are in the smaller share?`, a * k, `There are ${a + b} parts. Each part is ${(a + b) * k} ÷ ${a + b} = ${k}, so the smaller share is ${a} × ${k} = ${a * k}.`); }
+      ],
+      Geometry: [
+        () => { const l = ri(5, 14), w = ri(2, l - 1); return make("Geometry", `A rectangle is ${l} cm long and ${w} cm wide. What is its perimeter?`, 2 * (l + w), `2 × (${l} + ${w}) = ${2 * (l + w)} cm.`, " cm"); },
+        () => { const l = ri(5, 14), w = ri(2, l - 1); return make("Geometry", `What is the area of a rectangle ${l} cm long and ${w} cm wide?`, l * w, `Area = ${l} × ${w} = ${l * w} cm².`, " cm²"); },
+        () => { const s = ri(3, 12); return make("Geometry", `A square has sides of ${s} cm. What is its perimeter?`, 4 * s, `A square has 4 equal sides: 4 × ${s} = ${4 * s} cm.`, " cm"); },
+        () => { const [q, a, e] = [["How many degrees are in a right angle?", "90°", "A right angle measures 90°."], ["How many degrees are on a straight line?", "180°", "A straight line is 180°."], ["How many degrees are in a full turn?", "360°", "A full turn is 360°."]][ri(0, 2)]; return { topic: "Geometry", q, a, options: shuffle(["45°", "90°", "180°", "360°"]), explain: e }; }
+      ]
+    };
 
-      { topic: "Division", q: "What is 144 ÷ 12?", a: "12", options: ["10", "11", "12", "14"], explain: "144 ÷ 12 = 12 because 12 × 12 = 144." },
-      { topic: "Division", q: "Share 84 mangoes equally among 7 children. How many each?", a: "12 mangoes", options: ["11 mangoes", "12 mangoes", "13 mangoes", "14 mangoes"], explain: "84 ÷ 7 = 12 mangoes for each child." },
-      { topic: "Division", q: "What is 96 ÷ 8?", a: "12", options: ["10", "12", "14", "16"], explain: "96 ÷ 8 = 12." },
-      { topic: "Division", q: "What is 125 ÷ 5?", a: "25", options: ["20", "25", "30", "15"], explain: "125 ÷ 5 = 25." },
-
-      { topic: "Square roots", q: "What is √81?", a: "9", options: ["8", "9", "18", "81"], explain: "√81 = 9 because 9 × 9 = 81." },
-      { topic: "Square roots", q: "What is √144?", a: "12", options: ["11", "12", "14", "72"], explain: "√144 = 12 because 12 × 12 = 144." },
-      { topic: "Square roots", q: "What is √49?", a: "7", options: ["6", "7", "8", "14"], explain: "√49 = 7 because 7 × 7 = 49." },
-      { topic: "Square roots", q: "What is √100?", a: "10", options: ["5", "10", "20", "50"], explain: "√100 = 10 because 10 × 10 = 100." },
-
-      { topic: "Conversions", q: "How many centimetres are in 3 metres?", a: "300 cm", options: ["30 cm", "300 cm", "3,000 cm", "103 cm"], explain: "1 metre = 100 centimetres, so 3 m = 300 cm." },
-      { topic: "Conversions", q: "How many millilitres are in 2 litres?", a: "2,000 ml", options: ["200 ml", "2,000 ml", "20,000 ml", "1,200 ml"], explain: "1 litre = 1,000 ml, so 2 litres = 2,000 ml." },
-      { topic: "Conversions", q: "Convert 2.5 kilograms to grams.", a: "2,500 g", options: ["250 g", "2,500 g", "25,000 g", "2,050 g"], explain: "1 kg = 1,000 g, so 2.5 kg = 2,500 g." },
-      { topic: "Conversions", q: "How many minutes are in 2 hours?", a: "120 minutes", options: ["100 minutes", "120 minutes", "200 minutes", "60 minutes"], explain: "There are 60 minutes in an hour: 2 × 60 = 120." },
-
-      { topic: "Fractions", q: "What is 1/2 + 1/4?", a: "3/4", options: ["2/6", "3/4", "1/6", "2/4"], explain: "1/2 is 2/4, and 2/4 + 1/4 = 3/4." },
-      { topic: "Fractions", q: "What is 3/5 of 20?", a: "12", options: ["8", "10", "12", "15"], explain: "20 ÷ 5 = 4, then 4 × 3 = 12." },
-      { topic: "Fractions", q: "Which fraction is equal to 1/2?", a: "4/8", options: ["2/3", "3/8", "4/8", "5/8"], explain: "4/8 simplifies to 1/2 when the top and bottom are divided by 4." },
-      { topic: "Fractions", q: "What is 7/8 − 3/8?", a: "1/2", options: ["1/4", "1/2", "4/16", "3/8"], explain: "7/8 − 3/8 = 4/8, which simplifies to 1/2." },
-
-      { topic: "Percentages", q: "What is 10% of 500?", a: "50", options: ["5", "50", "100", "500"], explain: "10% means one tenth. 500 ÷ 10 = 50." },
-      { topic: "Percentages", q: "A class has 40 learners. 25% are absent. How many are absent?", a: "10", options: ["5", "8", "10", "25"], explain: "25% is one quarter, and 40 ÷ 4 = 10 learners." },
-      { topic: "Percentages", q: "What is 50% of 86?", a: "43", options: ["23", "40", "43", "46"], explain: "50% means half. Half of 86 is 43." },
-      { topic: "Percentages", q: "A book costs KSh 200. What is a 10% discount?", a: "KSh 20", options: ["KSh 10", "KSh 20", "KSh 40", "KSh 180"], explain: "10% of KSh 200 is KSh 20." },
-
-      { topic: "Ratio", q: "Red to blue beads are in a 2:3 ratio. If there are 10 red beads, how many blue?", a: "15", options: ["12", "13", "15", "20"], explain: "The ratio is multiplied by 5: 2 × 5 = 10, so 3 × 5 = 15 blue beads." },
-      { topic: "Ratio", q: "Simplify the ratio 12:8.", a: "3:2", options: ["2:3", "3:2", "6:4", "4:3"], explain: "Divide both parts by 4: 12:8 becomes 3:2." },
-      { topic: "Ratio", q: "Share 30 sweets in the ratio 2:3. How many are in the smaller share?", a: "12", options: ["10", "12", "15", "18"], explain: "There are 5 parts total. Each part is 30 ÷ 5 = 6, so the smaller share is 2 × 6 = 12." },
-      { topic: "Ratio", q: "A recipe uses 2 cups of flour for each 1 cup of sugar. How much flour for 3 cups of sugar?", a: "6 cups", options: ["3 cups", "5 cups", "6 cups", "8 cups"], explain: "The ratio is 2:1, so 3 cups of sugar need 2 × 3 = 6 cups of flour." },
-
-      { topic: "Geometry", q: "A rectangle is 8 cm long and 5 cm wide. What is its perimeter?", a: "26 cm", options: ["13 cm", "26 cm", "40 cm", "20 cm"], explain: "Perimeter = 2 × (length + width) = 2 × (8 + 5) = 26 cm." },
-      { topic: "Geometry", q: "What is the area of a rectangle 9 cm long and 4 cm wide?", a: "36 cm²", options: ["26 cm²", "36 cm²", "13 cm²", "72 cm²"], explain: "Area = length × width = 9 × 4 = 36 cm²." },
-      { topic: "Geometry", q: "How many degrees are in a right angle?", a: "90°", options: ["45°", "90°", "180°", "360°"], explain: "A right angle measures 90°." },
-      { topic: "Geometry", q: "A square has sides of 6 cm. What is its perimeter?", a: "24 cm", options: ["12 cm", "24 cm", "36 cm", "18 cm"], explain: "A square has 4 equal sides: 4 × 6 = 24 cm." }
-    ];
+    function buildQuiz(topic) {
+      const rotation = topic === "Mixed" ? shuffle(Object.keys(gens)) : null;
+      const out = [], seen = new Set();
+      for (let guard = 0; out.length < 10 && guard < 500; guard++) {
+        const t = rotation ? rotation[out.length % rotation.length] : topic;
+        const item = gens[t][ri(0, gens[t].length - 1)]();
+        if (!seen.has(item.q)) { seen.add(item.q); out.push(item); }
+      }
+      return out;
+    }
 
     const STORE_KEY = "mathsBloomProgress_v1";
     const $ = id => document.getElementById(id);
@@ -453,9 +480,7 @@
     });
 
     function startQuiz() {
-      const pool = selectedTopic === "Mixed" ? bank : bank.filter(item => item.topic === selectedTopic);
-      quiz = shuffle(pool).slice(0, 10);
-      while (quiz.length < 10) quiz.push(...shuffle(pool).slice(0, 10 - quiz.length));
+      quiz = buildQuiz(selectedTopic);
 
       index = 0;
       score = 0;
@@ -602,6 +627,13 @@
       }
       draw();
     }
+
+    document.addEventListener("keydown", e => {
+      if (!$("quizBox").classList.contains("active")) return;
+      if (e.key === "Enter" && !$("nextBtn").hidden && e.target.tagName !== "BUTTON") { $("nextBtn").click(); return; }
+      const n = parseInt(e.key, 10);
+      if (n >= 1 && n <= 4 && !locked) { const b = $("options").querySelectorAll(".option")[n - 1]; if (b) b.click(); }
+    });
 
     renderScoreboard();
   </script>
